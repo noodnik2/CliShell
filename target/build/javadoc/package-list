@@ -1,0 +1,11 @@
+clishell
+clishell.anno
+clishell.db
+clishell.ex
+clishell.net
+clishell.plugins
+clishell.reflection
+clishell.script
+clishell.util
+org.apache.tools.ant.util
+org.mortbay.util

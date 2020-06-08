@@ -1,0 +1,82 @@
+DATE:   December 30, 2010
+FROM:   Marty Ross
+RE:     CliShell Project Source Artifacts
+
+   $Id: README.txt 12629 2011-09-16 23:54:11Z mross $
+   $Rev: 12629 $
+   
+
+OVERVIEW
+========
+
+This folder contains the source artifacts for the CliShell program, configured
+as an Eclipse 3.5.1 project (that is - you'll find the .project, .classpath and other
+artifacts supporting the Eclipse IDE among the artifacts checked into source control
+in this folder and its child folders).
+
+CliShell is designed to be a standalone java CLI (Command Line Interface) "harness"
+for invoking java code - either interactively or via "script" files.
+
+Among the value proposition use cases for CliShell are:
+
+    1.  A "patchwork" set of utility methods are coded in Java, but they need to
+        be called in different orders, supplied with different sets of parameter
+        values in different situations.  Instead of coding a "main" program (or
+        using JUnit or some other "harness"), they can all be exposed as CLI 
+        commands using CliShell and invoked as required either interactively,
+        or through invoking them as a recorded "script" file.
+        
+    2.  During the process of developing java classes, it is frequently useful to
+        test them out by supplying a range of input, and calling them "ad hoc",
+        in a variety of sequences.  All of this is possible and easy using CliShell.
+        Of course, coding a "main" method and/or using JUnit "starter" classes
+        is another, valuable, approach for this, but there is an added degree
+        of interactivity and flexibility available when using CliShell for this
+        type of activity.
+
+
+NOTE: the files "eclipse.*" comprise the "reference configuration templates" of
+this project for use with the standard Eclipse IDE.  They may be copied to files
+of the same name, without the "eclipse" prefix (i.e., "eclipse.profile" is copied
+or renamed to ".profile, etc.) in order to use them.  Any changes made to them
+which should be "exported" to subversion should be done so via these files, since
+the "in use" versions of them should be configured as "ignored" by Subversion,
+allowing developers to maintain their own configuration that may differ from the
+standard.
+
+
+
+PEEK UNDER THE HOOD
+===================
+
+CliShell is bundled and delivered in a "jar" file that does not require anything
+but a Java 1.5 or greater JVM to run.  Using invocation options, it can be directed
+to load user code modules - called "CLI Plugins" - thereby adding to the set of CLI
+commands it knows.  
+
+The two main requirements about user code that be loaded into CliShell are:
+
+   1.  It must be located somewhere within the JVM's classpath; and,
+   
+   2.  The class and the methods comprising the CLI Plugin must be decorated
+       with special CliShell annotations containing the metadata needed by
+       CliShell to turn java methods into CLI commands
+       
+   3.  Methods to be turned into CLI commands must be of one of the supported
+       "forms" - really, java method signature types.  That is, not all possible
+       method parameter types and/or return value types are supported.  Although
+       this seems like a significant limitation, it can always be worked around
+       rather easily by creating a "proxy" (or "adapter") method for CliShell
+       to call any arbitrary java code that can't be called directly. 
+       
+There are several "builtin" plugins that come bundled with CliShell, implementing
+basic commands such as "help", "script", "set property", "exit", "system", etc.
+
+Anyone wishing to develop their own CliShell plugins should look at the source code
+for these builtin plugins to get an idea of the coding details.
+
+CliShell relies heavily upon java reflection, and does not require the user to 
+extend any classes or implement any interfaces.  
+
+    
+end of file

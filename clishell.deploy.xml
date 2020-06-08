@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+ 
+     Deploy CliShell_Pkg
+ 
+     $Id: clishell.deploy.xml 8564 2010-11-16 15:42:00Z mross $
+     $URL: http://lnappd003:8080/repositories/user_sandboxes/mross/wc/smauth/CliShell/clishell.deploy.xml $
+                   
+     Author:    Marty Ross
+     Date:      November 17th, 2010
+
+     NOTES:
+     
+     (1)    This script should be run from the exploded "staging" directory, i.e.,
+            after copying CliShell.zip into the "staging" directory, run:
+     
+        a.) cd $DEPLOYMENT_DIR/staging
+        b.) rm -rf CliShell_Pkg
+        c.) unzip CliShell_Pkg.zip
+        d.) cd CliShell_Pkg
+        e.) ant -f clishell.deploy.xml deploy_clishell
+                                                                                       
+     ====================================================================== -->
+
+<project name="Deploy CliShell_Pkg" default="default" basedir=".">
+    
+    <!-- this script should be located in the staging directory -->
+    <property name="staging.dir" value="${basedir}" />
+
+    <!-- define staging directory -->
+    <property name="deploy.dir" value="${staging.dir}/../../clishell" />
+
+    <description>
+    	Deploy CliShell_Pkg
+    </description>
+	
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default"
+        depends="help"
+        description="default target"
+    />
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: help                      
+     - - - - - - - - - - - - - - - - - -->
+    <target name="help">
+        <echo>
+        Targets:
+
+            help        - prints this text
+
+            deploy_clishell - deploys CliShell_Pkg package from ${staging.dir} into ${deploy.dir}
+
+        </echo>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: deploy_clishell
+     - - - - - - - - - - - - - - - - - -->
+    <target name="deploy_clishell">
+        <copy 
+            todir="${deploy.dir}" 
+            overwrite="true"
+            verbose="true"
+        >
+            <fileset
+                dir="${staging.dir}" 
+            />
+        </copy>
+    </target>
+
+</project>

@@ -1,0 +1,37 @@
+
+data things:
+- buffer
+- property
+- file
+- dbtable (?)
+
+verb things:
+- capture
+- transform
+- test
+
+test commands:
+- test match <regexp> value <const-value>
+-                     buffer <buffer-name>
+-                     file <file-name>
+test options:
+- 'e': if test fails, throw output to exception
+-- (normally outputs success or failure only to stdout)
+
+test output:
+- outputs single line to stdout (or includes in exception message if '-e' used)
+- line includes tokens:
+-- status (e.g. "SUCCESS" / "FAILURE")
+-- summary of test command processed
+-- user defined string supplied (with option?)
+
+command substitution ideas:
+- right now, we have "${property-name}" only
+- how about adding "${domain:item-name}", to include:
+-- "${buffer:buffer-name}"
+-- "${system:system-command}"
+-- "${property:property-name}" (explicit of what will continue to be default)
+-- "${file:file-name}"
+
+
+

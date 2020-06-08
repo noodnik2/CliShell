@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+ 
+     Build CliShell_Pkg
+ 
+     $Id: clishell.build.xml 9069 2011-01-09 21:28:40Z mross $
+     $URL: http://lnappd003:8080/repositories/user_sandboxes/mross/wc/smauth/CliShell/clishell.build.xml $
+                   
+     Author:    Marty Ross
+     Date:      November 17th, 2010
+
+     ====================================================================== -->
+
+<project name="Build CliShell_Pkg" default="default" basedir=".">
+    
+    <!-- get the current date & time, a new build number, and the version --> 
+    <tstamp />
+    <buildnumber />
+    <property file="build.properties" />
+    
+    <property name="script.dir"         location="${basedir}" />
+    
+    <property name="javasrc.dir"        location="${basedir}/src/main/java" />
+    <property name="target.dir"         location="${basedir}/target" />
+    
+    <property name="dist.dir"           location="${target.dir}/dist" />
+    <property name="build.dir"          location="${target.dir}/build" />
+
+    <property name="build-classes.dir"  location="${build.dir}/classes" />
+    <property name="build-jars.dir"     location="${build.dir}/jars" />
+    <property name="build-javadoc.dir"  location="${build.dir}/javadoc" />
+
+    <property name="dist.pkgname.clishell"      value="CliShell_Pkg" />
+    <property name="dist.zipname.clishell"      value="${dist.pkgname.clishell}.zip" />
+    <property name="dist.zipname-api.clishell"  value="${dist.pkgname.clishell}_Api.zip" />
+    
+    <property name="dist.jarname.clishell"      value="clishell.jar" />
+
+
+    <description>
+    	Build CliShell_Pkg
+    </description>
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" depends="help" description="default target" />
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: help                      
+     - - - - - - - - - - - - - - - - - -->
+    <target name="help">
+        <echo>
+        Targets:
+
+            help        - prints this text            
+            clean       - cleans main intermediate output created by this script
+            build       - builds main buildable targets in this script
+        	dist        - creates the distribution artifacts
+
+        </echo>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: clean
+     - - - - - - - - - - - - - - - - - -->
+    <target name="clean">
+        <delete dir="${target.dir}" quiet="true" />
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - -
+          target: touch-files
+     - - - - - - - - - - - - - - - - - -->
+    <target name="touch-files">
+        <!--
+            update the modification timestamp for file(s)
+            that either are dependencies for tasks or for
+            we want to run, or for which the source control
+            revision number should get updated upon checkin
+        -->
+        <touch file="build.properties" />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: build-classes
+     - - - - - - - - - - - - - - - - - -->
+    <target name="build-classes" depends="touch-files">
+        <mkdir  dir="${build-classes.dir}" />
+        <javac 
+            srcdir="${javasrc.dir}"
+            destdir="${build-classes.dir}"
+            classpathref="clishell-classpath"
+            debug="true"
+        >
+            <compilerarg line="-Xlint" />
+        </javac>
+        <copy todir="${build-classes.dir}">
+            <fileset dir="${javasrc.dir}">
+                <include name="**/clirunner-builtin.properties" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: build-jars
+     - - - - - - - - - - - - - - - - - -->
+    <target name="build-jars" depends="build-classes">
+
+        <mkdir dir="${build-jars.dir}" />
+                
+        <jar 
+            destfile="${build-jars.dir}/${dist.jarname.clishell}"
+            basedir="${build-classes.dir}"
+        >
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Specification-Title" value="CliShell" />
+                <attribute name="Specification-Version" value="${version}" />
+                <attribute name="Specification-Vendor" value="Unknown" />
+                <attribute name="Implementation-Title" value="${dist.pkgname.clishell}" />
+                <attribute name="Implementation-Version" value="${version} Build ${user.name}-${build.number} ${DSTAMP}.${TSTAMP}" /> 
+                <attribute name="Implementation-Vendor" value="Unknown" />
+                <attribute name="Main-Class" value="clishell.CliRunner" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: build-javadoc
+     - - - - - - - - - - - - - - - - - -->
+    <target name="build-javadoc">
+        <mkdir  dir="${build-javadoc.dir}" />
+        <javadoc 
+            sourcepath="${javasrc.dir}"
+            destdir="${build-javadoc.dir}"
+            classpathref="clishell-classpath"
+        />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: build
+     - - - - - - - - - - - - - - - - - -->
+    <target name="build" depends="clean,build-jars,build-javadoc" />
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: dist
+     - - - - - - - - - - - - - - - - - -->
+    <target name="dist" depends="build">
+        <mkdir dir="${dist.dir}" />
+        <zip 
+            destfile="${dist.dir}/${dist.zipname.clishell}"
+            duplicate="fail"
+        >
+            <zipfileset
+                file="${script.dir}/clishell.deploy.xml"
+                prefix="${dist.pkgname.clishell}"
+            />
+            <!-- put the JAR file in the ${dist.pkgname.clishell}" directory -->
+            <zipfileset 
+                dir="${build-jars.dir}"
+                prefix="${dist.pkgname.clishell}"
+                erroronmissingdir="false"
+            />
+        </zip>
+        <zip 
+            destfile="${dist.dir}/${dist.zipname-api.clishell}"
+            duplicate="fail"
+        >
+            <zipfileset 
+                dir="${build-javadoc.dir}"
+                prefix="${dist.pkgname.clishell}/api"
+            />
+        </zip>
+    </target>
+
+    <!--
+    
+        **** NOTE: Targets from here on down should probably be removed,
+                   as they are only for developer convenience, and not
+                   thought to be part of the official work-flow (which
+                   separates build and deployment steps)
+                   
+    -->
+
+    <property name="stage.dir" location="${wc_home}/clishell_stage" />
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: stage
+     - - - - - - - - - - - - - - - - - -->
+    <target name="stage" depends="dist">
+        <delete dir="${stage.dir}" quiet="true" />
+        <mkdir dir="${stage.dir}" />
+        <unzip
+            src="${dist.dir}/${dist.zipname.clishell}"
+            dest="${stage.dir}"
+        />
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: deploy
+
+          NOTE: this target should only be used in an environment with an 
+                installed Windchill instance, configured as per defined
+                properties!
+
+     - - - - - - - - - - - - - - - - - -->
+    <target name="deploy" depends="stage">
+        <ant
+            dir="${stage.dir}/${dist.pkgname.clishell}"
+            antfile="clishell.deploy.xml"
+            target="deploy_clishell"
+        />
+    </target>
+    
+    <!--
+        Build Classpath
+    -->
+    <!-- property file="${basedir}/clishell-env.properties" / -->
+    <path id="clishell-classpath">
+    </path>
+
+</project>

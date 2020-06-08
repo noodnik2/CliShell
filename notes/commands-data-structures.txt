@@ -1,0 +1,26 @@
+FROM:   Marty
+DATE:   October 30 2010
+RE:     Data structures to support commands for CLI
+
+Terminology:
+
+Command:                java method
+- i.e., "void myMethod(String arg)"
+
+Full Command Name:      vector of one or more tokens used as "primary key" to locate a Command
+- i.e., "my method" => "void myMethod"
+
+Partial Command Name:   vector of one or more partial tokens used to locate one or more Full Command Names
+- i.e., "m me" => "my method"
+
+What we'd like is a class to manage full and partial command names; some methods;
+
+void addFullCommand(Full Command Name)
+- this method would add the full command name to its database
+
+Set<Full Command Name> getFullCommands(Partial Command Name)
+- this method would return a set of zero or more Full Command Names corresponding to the given Partial Command Name supplied
+
+
+
+end of file
